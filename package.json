@@ -1,0 +1,23 @@
+{
+  "name": "pomodoro_timer",
+  "version": "1.0.0",
+  "description": "Your own Pomodoro timer.",
+  "main": "src/main.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "dependencies": {
+    "babel": "^6.23.0",
+    "watchjs": "^0.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "pomodoro",
+    "timer"
+  ],
+  "author": "Oustinger",
+  "license": "ISC"
+}

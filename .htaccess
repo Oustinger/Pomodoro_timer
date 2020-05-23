@@ -1175,7 +1175,7 @@ FileETag None
 #   example, `main.combined.js`:
 #
 #       <!--#include file="js/jquery.js" -->
-#       <!--#include file="js/jquery.timer.js" -->
+#       <!--#include file="js/jquery.Timer.js" -->
 #
 #   Apache will replace those lines with the content of the
 #   specified files.

@@ -1,0 +1,17 @@
+<component name="libraryTable">
+  <library name="Generated files" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/dist/.eslintrc.js" />
+        <item url="file://$PROJECT_DIR$/dist/babel.config.js" />
+        <item url="file://$PROJECT_DIR$/dist/plugins.js" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/dist/.eslintrc.js" />
+      <root url="file://$PROJECT_DIR$/dist/babel.config.js" />
+      <root url="file://$PROJECT_DIR$/dist/plugins.js" />
+    </CLASSES>
+    <SOURCES />
+  </library>
+</component>

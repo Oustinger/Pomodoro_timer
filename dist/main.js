@@ -15,29 +15,33 @@ function _interopRequireDefault(obj) {
 }
 
 var watch = _watchjs["default"].watch;
-var timeManager = _Timer["default"].timeManager;
-var completeTask = _TaskManager["default"].completeTask;
-var increaseDoneTasks = _DoneTasksCounter["default"].increaseDoneTasks;
 var state = {
-  setDefault: function setDefault() {
-    var inTurn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-    state.inTurn = inTurn;
+  setValues: function setValues() {
+    var outOfTurn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    state.outOfTurn = outOfTurn;
     state.isDone = false;
   }
 };
 watch(state, 'isDone', function () {
   if (state.isDone) {
-    completeTask();
-    timeManager.shortBreak();
-    increaseDoneTasks();
-    state.setDefault();
+    _Timer["default"].timeManager.shortBreak();
+
+    _DoneTasksCounter["default"].increaseDoneTasks();
+
+    _Timer["default"].stop();
+
+    _TaskManager["default"].completeTask();
+
+    state.setValues();
   }
 });
-watch(state, 'inTurn', function () {
-  return state.inTurn ? null : _Timer["default"].run();
+watch(state, 'outOfTurn', function () {
+  return state.outOfTurn ? _Timer["default"].run() : null;
 });
-watch(_DoneTasksCounter["default"], 'needLongBreak', timeManager.longBreak);
-state.setDefault();
+watch(_DoneTasksCounter["default"], 'needLongBreak', function () {
+  return _DoneTasksCounter["default"].needLongBreak ? _Timer["default"].timeManager.longBreak() : null;
+});
+state.setValues();
 
 _TaskManager["default"].init(state);
 

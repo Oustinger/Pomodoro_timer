@@ -123,37 +123,21 @@ function _defineProperty(obj, key, value) {
 }
 
 var watch = _watchjs["default"].watch;
-
-var emptyFunc = function emptyFunc() {};
-
-var askConfirmYN = function askConfirmYN(parentElem, onYes, onNo) {
-  for (var _len = arguments.length, args = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
-    args[_key - 3] = arguments[_key];
-  }
-
-  var confirmContainer = new _ConfirmationYN["default"]();
-  watch(confirmContainer.answer, 'value', function () {
-    confirmContainer.remove();
-    return confirmContainer.answer.value ? onYes.apply(void 0, args) : onNo.apply(void 0, args);
-  });
-  confirmContainer.ask(parentElem);
-};
-
 var timeManager = {
-  preWork: 5,
-  work: 5,
-  preRelax: 5,
-  relax: 5
+  preWork: 1500,
+  work: 1500,
+  preRelax: 300,
+  relax: 300
 };
 
 timeManager.longBreak = function () {
-  timeManager.preRelax = 10;
-  timeManager.relax = 10;
+  timeManager.preRelax = 900;
+  timeManager.relax = 900;
 };
 
 timeManager.shortBreak = function () {
-  timeManager.preRelax = 5;
-  timeManager.relax = 5;
+  timeManager.preRelax = 300;
+  timeManager.relax = 300;
 };
 
 var modeMapping = {
@@ -163,31 +147,35 @@ var modeMapping = {
     bgColor: 'red',
     onPause: null,
     forTimer: false,
-    forSkip: null
+    forSkip: null,
+    askFinish: false
   },
   work: {
     time: timeManager.work,
-    buttons: ['pausePlay', 'finish', 'restart', 'stop'],
+    buttons: ['pausePlay', 'finish', 'restart'],
     bgColor: 'red',
     onPause: false,
     forTimer: true,
-    forSkip: true
+    forSkip: true,
+    askFinish: false
   },
   preRelax: {
     time: timeManager["break"],
     buttons: ['start', 'skip'],
-    bgColor: 'blue',
+    bgColor: 'green',
     onPause: null,
     forTimer: false,
-    forSkip: true
+    forSkip: true,
+    askFinish: false
   },
   relax: {
     time: timeManager["break"],
     buttons: ['pausePlay', 'finish', 'restart'],
-    bgColor: 'blue',
+    bgColor: 'green',
     onPause: false,
     forTimer: true,
-    forSkip: true
+    forSkip: true,
+    askFinish: false
   }
 };
 
@@ -209,6 +197,7 @@ var updateState = function updateState(state, modeName) {
 
     state[key] = value;
   });
+  console.log('updateState', modeName, modeMapping[modeName].time);
 };
 
 var getMode = function getMode(current, operation) {
@@ -270,7 +259,11 @@ var eventButtonsFunctions = {
     state.timerRuner = setTimer();
   },
   finish: function finish(state) {
-    if (state.modeName === 'work') state.taskIsDone();
+    if (state.modeName === 'work') {
+      state.taskIsDone();
+      return;
+    }
+
     clearInterval(state.timerRuner);
     updateState(state, getMode(state.modeName, 'next'));
   },
@@ -278,63 +271,79 @@ var eventButtonsFunctions = {
     clearInterval(state.timerRuner);
     updateState(state, getMode(state.modeName, 'prev'));
   },
-  stop: function stop(state) {
-    clearInterval(state.timerRuner);
-    updateState(state, getMode(state.modeName, 'toStart'));
-  },
   skip: function skip(state) {
     clearInterval(state.timerRuner);
     updateState(state, getMode(state.modeName, 'toStart'));
   }
 };
 var render = {
-  bgColor: function bgColor(_ref3, container) {
-    var color = _ref3.color;
-    return container.setAttribute('bgColor', "".concat(color));
+  bgColor: function bgColor(containers) {
+    return containers.forEach(function (container) {
+      container.classList.toggle('red');
+      container.classList.toggle('green');
+    });
   },
   buttons: function buttons(state, container) {
     container.innerHTML = '';
     state.buttons.forEach(function (type) {
       var buttonContainer = document.createElement('button');
+      buttonContainer.classList.add(type);
       buttonContainer.dataset.buttonType = type;
-      buttonContainer.textContent = type;
-      buttonContainer.addEventListener('click', function (_ref4) {
-        var target = _ref4.target;
+      buttonContainer.addEventListener('click', function (_ref3) {
+        var target = _ref3.target,
+            currentTarget = _ref3.currentTarget;
 
-        if (type === 'stop') {
-          askConfirmYN(target, eventButtonsFunctions[type], emptyFunc, state);
-          return;
+        if (currentTarget === target) {
+          if (type === 'finish') {
+            if (state.askFinish) return;
+            state.askFinish = true;
+            var confirmer = new _ConfirmationYN["default"]();
+            var answer = confirmer.ask(target.parentNode);
+            watch(answer, 'value', function () {
+              confirmer.remove();
+
+              if (answer.value) {
+                eventButtonsFunctions[type](state);
+              }
+
+              state.askFinish = false;
+            });
+            return;
+          }
+
+          eventButtonsFunctions[type](state);
         }
-
-        eventButtonsFunctions[type](state);
       });
       container.appendChild(buttonContainer);
     });
   },
-  time: function time(_ref5, container) {
-    var _time = _ref5.time;
+  time: function time(_ref4, container) {
+    var _time = _ref4.time;
     container.textContent = millisToMinutesAndSeconds(_time);
   },
-  pausePlay: function pausePlay(_ref6, container) {
-    var onPause = _ref6.onPause;
+  pausePlay: function pausePlay(_ref5, container) {
+    var onPause = _ref5.onPause;
     if (onPause === null) return;
     var pausePlayButton = container.querySelector('[data-button-type="pausePlay"]');
-    pausePlayButton.textContent = onPause ? 'resume' : 'pause';
+    pausePlayButton.classList.remove(onPause ? 'pause' : 'play');
+    pausePlayButton.classList.add(onPause ? 'play' : 'pause');
   }
 };
 var state = {};
 
 var init = function init(mainState) {
-  var timerContainer = document.querySelector('[data-container="timer"]');
+  var header = document.querySelector('header');
+  var timerContainer = document.querySelector('[data-container="timer-container"]');
   var timeZone = document.querySelector('[data-container="time-zone"]');
   var buttonsContainer = document.querySelector('[data-container="buttons"]');
   var elements = {
+    header: header,
     timerContainer: timerContainer,
     timeZone: timeZone,
     buttonsContainer: buttonsContainer
   };
   watch(state, 'bgColor', function () {
-    return render.bgColor(state, elements.timerContainer);
+    return render.bgColor([elements.header, elements.timerContainer]);
   });
   watch(state, 'buttons', function () {
     return render.buttons(state, elements.buttonsContainer);
@@ -353,13 +362,20 @@ var init = function init(mainState) {
 };
 
 var run = function run() {
+  clearInterval(state.timerRuner);
   updateState(state, 'work');
   state.timerRuner = setTimer();
+};
+
+var stop = function stop() {
+  clearInterval(state.timerRuner);
+  updateState(state, getMode(state.modeName, 'next'));
 };
 
 var Timer = {
   init: init,
   run: run,
+  stop: stop,
   timeManager: timeManager
 };
 var _default = Timer;

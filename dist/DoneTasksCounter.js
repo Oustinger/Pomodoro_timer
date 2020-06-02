@@ -25,7 +25,10 @@ var increase = function increase() {
   if (state.count === 4) {
     state.count = 0;
     state.needLongBreak = true;
+    return;
   }
+
+  state.needLongBreak = false;
 };
 
 var decrease = function decrease() {

@@ -30,42 +30,46 @@ function _createClass(Constructor, protoProps, staticProps) {
 var ConfirmationYN = /*#__PURE__*/function () {
   function ConfirmationYN() {
     _classCallCheck(this, ConfirmationYN);
-
-    this.container = this.createElement('div');
-    this.answer = {
-      value: null
-    };
   }
 
   _createClass(ConfirmationYN, [{
     key: "createElement",
-    value: function createElement(name) {
-      var text = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ''; // eslint-disable-line
-
+    value: function createElement(name, type) {
+      // eslint-disable-line
       var element = document.createElement("".concat(name));
-      element.textContent = text;
+      element.classList.add(type);
+      element.dataset.type = type;
       return element;
     }
   }, {
     key: "ask",
     value: function ask(parentContainer) {
-      var _this = this,
-          _this$container;
+      var _this$container;
 
       var questionText = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Are you sure?';
-      this.container.textContent = questionText;
-      var buttons = [this.createElement('button', 'Yes'), this.createElement('button', 'No')];
+      var answer = {
+        value: null
+      };
+      var buttons = [this.createElement('button', 'yes'), this.createElement('button', 'no')];
       buttons.forEach(function (b) {
         return b.addEventListener('click', function (_ref) {
-          var target = _ref.target;
-          _this.answer.value = target.textContent === 'Yes';
+          var target = _ref.target,
+              currentTarget = _ref.currentTarget;
+
+          if (currentTarget === target) {
+            answer.value = target.dataset.type === 'yes';
+          }
         });
       });
+      this.container = this.createElement('div', 'confirmationYN');
+      var text = document.createElement('p');
+      text.textContent = questionText;
 
-      (_this$container = this.container).append.apply(_this$container, buttons);
+      (_this$container = this.container).append.apply(_this$container, [text].concat(buttons));
 
-      parentContainer.append(this.container);
+      parentContainer.appendChild(this.container);
       buttons[0].focus();
+      return answer;
     }
   }, {
     key: "remove",

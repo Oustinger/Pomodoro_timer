@@ -1,16 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
 <html class="no-js" lang="">
 
 <head>
   <meta charset="utf-8">
-  <title>PomodoroTimer</title>
+  <title>Pomodoro Timer</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="manifest" href="site.webmanifest">
   <link rel="apple-touch-icon" href="icon.png">
+  <link rel="shortcut icon" href="icon.png" type="image/png">
   <!-- Place favicon.ico in the root directory -->
 
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Nunito&family=Raleway&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/main.css">
 
@@ -23,47 +25,69 @@
   <![endif]-->
 
   <!-- Add your site or application content here -->
-  <div data-container="task-manager">
-    <div>
-      <h3>Lists</h3>
-      <div data-container="lists"></div>
-      <form class="form-inline" data-container="new-list-form">
-        <input type="text" class="form-control" name="name">
-        <input type="submit" value="Add">
-      </form>
+  <header class="green">
+    <img class="logo" src="icon.png">
+    <h1>Pomodoro Timer</h1>
+  </header>
+
+  <div class="wrapper">
+    <div id="timer-container" class="green" data-container="timer-container">
+      <div id="time-zone" data-container="time-zone"></div>
+      <div id="timer-buttons" data-container="buttons"></div>
     </div>
-    <div>
-      <h3>Tasks</h3>
-      <form class="form-inline" data-container="new-task-form">
-        <input type="text" class="form-control" name="name">
-        <input type="submit" value="Add">
-      </form>
-      <div data-container="tasks">
-        <div data-container="selected-task"></div>
+
+    <div id="done-tasks-counter" data-container="done-tasks-counter">
+      <p class="header">Done tasks counter</p>
+      <div id="counter">
+        <div class="text" data-container="quantity"></div>
+        <div class="counterButtons">
+          <button class="increase" data-container="increase"></button>
+          <button class="decrease" data-container="decrease"></button>
+        </div>
       </div>
-      <h4>Done</h4>
-      <div data-container="done-tasks"></div>
+    </div>
+
+    <div id="task-manager" data-container="task-manager">
+      <div id="categories-container">
+        <h2>Categories</h2>
+        <div id="lists" data-container="lists"></div>
+        <form class="form-inline" data-container="new-list-form">
+          <input class="text" type="text" class="form-control" name="name">
+          <input class="submit" type="submit" value="">
+        </form>
+      </div>
+
+      <div id="tasks-container">
+        <div id="tasks-list">
+          <h2>Tasks</h2>
+          <form class="form-inline" data-container="new-task-form">
+            <input class="text" type="text" class="form-control" name="name">
+            <input class="submit" type="submit" value="">
+          </form>
+          <div id="tasks" data-container="tasks">
+            <p class="prompt" data-container="tasks-prompt">Add your tasks here</p>
+          </div>
+        </div>
+        <div id="done-tasks-list">
+          <h2>Done</h2>
+          <div id="done-tasks" data-container="done-tasks">
+            <p class="prompt" data-container="done-tasks-prompt">Your completed tasks will be displayed here</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div data-container="timer">
-    <h3>Timer</h3>
-    <div data-container="time-zone"></div>
-    <div data-container="buttons"></div>
-  </div>
-  <div data-container="done-tasks-counter">
-    <h3>Done tasks counter</h3>
-    <button data-container="increase"></button>
-    <div data-container="quantity"></div>
-    <button data-container="decrease"></button>
-  </div>
 
-  <script src="vendor/modernizr-3.8.0.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-  <script>window.jQuery || document.write('<script src="vendor/jquery-3.4.1.min.js"><\/script>')</script>
+  <footer>
+    <p class="copyrights">Pomodoro-Tracker is not related to the Pomodoro Technique™/Pomodoro™’s trademark holder Cirillo Company and respects its trademarks.<br>
+    Pomodoro Technique® and Pomodoro® are registered trademarks of Francesco Cirillo.
+    </p>
+    <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Pomodoro_Technique">More about Pomodoro Technique</a>
+    <p class="author">© my_email@email.com, 2020</p>
+  </footer>
+
   <script src="plugins.js"></script>
-
   <script type="module" src="jsDist/bundle.js"></script>
-  <script>console.log(('hiss'))</script>
 
   <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
   <script>

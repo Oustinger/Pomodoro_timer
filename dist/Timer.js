@@ -197,7 +197,6 @@ var updateState = function updateState(state, modeName) {
 
     state[key] = value;
   });
-  console.log('updateState', modeName, modeMapping[modeName].time);
 };
 
 var getMode = function getMode(current, operation) {
@@ -232,21 +231,26 @@ var timerFunc = function timerFunc(state) {
   }
 
   state.time = 0;
-  if (state.modeName === 'work') state.taskIsDone();
+
+  if (state.modeName === 'work') {
+    state.taskIsDone();
+    return;
+  }
+
   clearInterval(state.timerRuner);
   setTimeout(function () {
     return updateState(state, getMode(state.modeName, 'next'), 1000);
   });
 };
 
-var setTimer = function setTimer() {
+var setTimer = function setTimer(state) {
   return setInterval(timerFunc, 1000, state);
 };
 
 var eventButtonsFunctions = {
   start: function start(state) {
     updateState(state, getMode(state.modeName, 'next'));
-    state.timerRuner = setTimer();
+    state.timerRuner = setTimer(state);
   },
   pausePlay: function pausePlay(state) {
     state.onPause = !state.onPause;
@@ -256,7 +260,7 @@ var eventButtonsFunctions = {
       return;
     }
 
-    state.timerRuner = setTimer();
+    state.timerRuner = setTimer(state);
   },
   finish: function finish(state) {
     if (state.modeName === 'work') {
@@ -364,7 +368,7 @@ var init = function init(mainState) {
 var run = function run() {
   clearInterval(state.timerRuner);
   updateState(state, 'work');
-  state.timerRuner = setTimer();
+  state.timerRuner = setTimer(state);
 };
 
 var stop = function stop() {

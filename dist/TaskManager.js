@@ -52,12 +52,24 @@ function _arrayLikeToArray(arr, len) {
 
 var getElementsIn = function getElementsIn(state, type) {
   var isDone = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  if (type === 'list') return state.lists;
 
-  if (type === 'task') {
-    return _lodash["default"].concat(state.tasks).filter(function (task) {
-      return task.parentList === state.activeList.name && task.isDone === isDone;
-    });
+  switch (type) {
+    case 'list':
+      {
+        return state.lists;
+      }
+
+    case 'task':
+      {
+        return _lodash["default"].concat(state.tasks).filter(function (task) {
+          return task.parentList === state.activeList.name && task.isDone === isDone;
+        });
+      }
+
+    default:
+      {
+        throw Error("Unknown type in function - \"getElementsIn\": ".concat(type));
+      }
   }
 };
 
@@ -87,13 +99,18 @@ var getPosition = function getPosition(state, type) {
   return getElementsIn(state, type, isDone).length;
 };
 
+var getSelectedElementId = function getSelectedElementId(state) {
+  if (state.activeTaskId !== null) return state.activeTaskId;
+  var nextElement = sortByPosition(getElementsIn(state, 'task'))[0];
+  return nextElement ? nextElement.id : null;
+};
+
 var eventFunctions = {
   lists: {
     select: function select(state, button) {
       var _button$dataset = button.dataset,
           id = _button$dataset.id,
           name = _button$dataset.name;
-      console.log('activeList change');
       state.activeList = {
         id: id,
         name: name
@@ -111,8 +128,7 @@ var eventFunctions = {
       var mainElement = getElementById(state, id, type);
       var secondaryElement = getElementsIn(state, type).find(function (task) {
         return task.position === mainElement.position + upDownPos;
-      }); // console.log(mainElement, secondaryElement, button.parentNode, type, id, upDownPos);
-
+      });
       if (!secondaryElement) return;
       mainElement.position += upDownPos;
       secondaryElement.position -= upDownPos;
@@ -151,13 +167,6 @@ var eventFunctions = {
     }
   }
 };
-
-var getSelectedElementId = function getSelectedElementId(state) {
-  if (state.activeTaskId !== null) return state.activeTaskId;
-  var nextElement = sortByPosition(getElementsIn(state, 'task'))[0];
-  return nextElement ? nextElement.id : null;
-};
-
 var selectButtons = {
   list: function list(isMutable) {
     return isMutable ? ['up', 'down', 'remove'] : ['up', 'down'];
@@ -208,7 +217,7 @@ var renderLists = function renderLists(state, elements) {
     li.addEventListener('click', function (_ref5) {
       var target = _ref5.target,
           currentTarget = _ref5.currentTarget;
-      return currentTarget === target || text === target ? eventFunctions.lists.select(state, li) : null;
+      if (currentTarget === target || text === target) eventFunctions.lists.select(state, li);
     });
     var allButtons = putButtons(state, 'list', elements, isMutable);
     var replaceButt = document.createElement('div');
@@ -376,8 +385,7 @@ var elements = {
   doneTaskPrompt: document.querySelector('[data-container="done-tasks-prompt"]'),
   selectedTask: document.querySelector('[data-container="selected-task"]'),
   buttons: createButtonsModels()
-}; // let i = 0;
-
+};
 var state = (0, _onChange["default"])({
   activeList: {
     id: null,
@@ -386,13 +394,7 @@ var state = (0, _onChange["default"])({
   activeTaskId: null,
   lists: [],
   tasks: []
-}, function (path, value, previousValue) {
-  // if (i > 20) return;
-  // console.log('Object changed:', ++i);
-  // console.log('this:', this);
-  // console.log('path:', path);
-  // console.log('value:', value);
-  // console.log('previousValue:', previousValue);
+}, function (path) {
   path === 'activeList' ? render.all(this, elements) : null;
   path === 'activeTaskId' ? render.tasks(this, elements) : null;
   path.includes('lists') ? render.lists(this, elements) : null;

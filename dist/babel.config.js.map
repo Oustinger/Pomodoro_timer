@@ -1,0 +1,1 @@
+{"version":3,"sources":["../babel.config.js"],"names":["module","exports","presets"],"mappings":";;AAAAA,MAAM,CAACC,OAAP,GAAiB;AACfC,EAAAA,OAAO,EAAE,CAAC,YAAD;AADM,CAAjB","sourcesContent":["module.exports = {\r\n  presets: ['@babel/env'],\r\n};\r\n"],"file":"babel.config.js"}
